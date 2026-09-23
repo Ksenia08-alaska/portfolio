@@ -7,3 +7,4 @@ dist/
 shots/
 .DS_Store
 Thumbs.db
+package-lock.json
