@@ -1,0 +1,43 @@
+---
+import { site } from '../content/site';
+const year = new Date().getFullYear();
+---
+<footer class="footer on-dark">
+  <div class="container footer__inner">
+    <p>© {year} {site.person.fullName}</p>
+    <ul class="footer__links">
+      <li><a href={site.contacts.telegram.url} target="_blank" rel="noopener">Telegram</a></li>
+      <li><a href={site.contacts.email.url}>Почта</a></li>
+    </ul>
+    <a class="footer__top" href="#main">Наверх</a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: 28px calc(28px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgb(243 235 223 / 0.1);
+    font-size: 0.95rem;
+  }
+  .footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 28px;
+  }
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+  }
+  .footer a {
+    color: var(--on-dark-soft);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer a:hover { color: var(--orange); }
+  @media (max-width: 760px) {
+    .footer { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+  }
+</style>

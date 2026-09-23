@@ -1,0 +1,492 @@
+---
+import Base from '../../layouts/Base.astro';
+import Button from '../../components/Button.astro';
+import Arrow from '../../components/Arrow.astro';
+import PhoneMockup from '../../components/PhoneMockup.astro';
+import BrowserMockup from '../../components/BrowserMockup.astro';
+import Contact from '../../components/Contact.astro';
+import Scheme from '../../components/Scheme.astro';
+import CaseNav from '../../components/CaseNav.astro';
+import { site, type Project } from '../../content/site';
+
+export function getStaticPaths() {
+  return site.projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project: p } = Astro.props as { project: Project };
+const idx = site.projects.findIndex((x) => x.slug === p.slug);
+const next = site.projects[(idx + 1) % site.projects.length];
+const siteUrl = p.links[0]?.url;
+const phones = p.screens.filter((s) => s.device === 'phone');
+const browsers = p.screens.filter((s) => s.device === 'browser');
+const navItems = [
+  { id: 'role', label: 'Роль и стек' },
+  { id: 'features', label: 'Что умеет' },
+  ...(p.screens.length ? [{ id: 'screens', label: 'Экраны' }] : []),
+  ...(p.architecture.length ? [{ id: 'arch', label: 'Как устроено' }] : []),
+  ...(p.decisions.length ? [{ id: 'decisions', label: 'Решения' }] : []),
+  ...(p.debugging.length ? [{ id: 'debug', label: 'Отладка' }] : []),
+  { id: 'contact', label: 'Связаться' },
+];
+---
+<Base title={`${p.title} — кейс | ${site.person.fullName}`} description={p.summary}>
+  <!-- ПЕРВЫЙ ЭКРАН КЕЙСА -->
+  <section class="chero">
+    <div class="container">
+      <a class="chero__back" href="/#works"><span><Arrow dir="right" /></span>Все работы</a>
+      <div class="chero__meta">
+        <span class:list={['chero__status', { 'is-com': p.commercial }]}>{p.status}</span>
+        <span>{p.kind}</span>
+      </div>
+      <h1 class="chero__title display" data-split>{p.title}</h1>
+      <div class="chero__grid">
+        <p class="chero__lead">{p.lead}</p>
+        <div class="chero__side">
+          {p.links.length > 0 && (
+            <div class="chero__links">
+              {p.links.map((l, i) => (
+                <Button href={l.url} label={l.label} variant={i === 0 ? 'primary' : 'ghost'} external />
+              ))}
+            </div>
+          )}
+          {p.note && <p class="chero__note">{p.note}</p>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CaseNav items={navItems} />
+
+  <!-- ОБЛОЖКА -->
+  <section class="ccover" aria-label="Обложка проекта">
+    <div class="container">
+      <div class="ccover__panel">
+        <div class="ccover__device" data-parallax>
+          {p.cover.device === 'scheme'
+            ? <Scheme steps={p.scheme ?? []} />
+            : p.cover.device === 'phone'
+            ? <PhoneMockup screen={p.cover} title={p.title} />
+            : <BrowserMockup screen={p.cover} title={p.title} url={siteUrl} />}
+        </div>
+        <span class="ccover__word" aria-hidden="true">{p.title}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- РОЛЬ И СТЕК -->
+  <section class="crole" id="role" aria-labelledby="role-title">
+    <div class="container crole__grid">
+      <div>
+        <h2 class="h3 crole__h" id="role-title">Моя роль</h2>
+        <p class="crole__role">{p.role}</p>
+        <ul class="crole__list">
+          {p.roleList.map((r) => <li>{r}</li>)}
+        </ul>
+      </div>
+      {p.stack.length > 0 && (
+        <div>
+          <h2 class="h3 crole__h">Стек</h2>
+          <dl class="crole__stack">
+            {p.stack.map((s) => (
+              <div class="crole__layer">
+                <dt>{s.layer}</dt>
+                <dd>{s.items.map((it) => <span class="tag">{it}</span>)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ВОЗМОЖНОСТИ -->
+  <section class="cfeat" id="features" aria-labelledby="feat-title">
+    <div class="container cfeat__grid">
+      <h2 class="h2" id="feat-title" data-split>Что умеет</h2>
+      <ul class="cfeat__list">
+        {p.features.map((f) => (
+          <li data-reveal>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c.6 6.2 5.8 11.4 12 12-6.2.6-11.4 5.8-12 12-.6-6.2-5.8-11.4-12-12C6.2 11.4 11.4 6.2 12 0Z" fill="currentColor"/></svg>
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ЭКРАНЫ -->
+  {p.screens.length > 0 && (
+    <section class="cscreens on-dark" id="screens" aria-labelledby="screens-title">
+      <div class="container">
+        <div class="cscreens__head">
+          <h2 class="h2" id="screens-title" data-split>Экраны</h2>
+          <p class="muted">Нажмите на любой экран, чтобы открыть скрин целиком.</p>
+        </div>
+        {phones.length > 0 && (
+          <div class="cscreens__phones">
+            {phones.map((s) => <PhoneMockup screen={s} title={p.title} />)}
+          </div>
+        )}
+        {browsers.length > 0 && (
+          <div class="cscreens__browsers">
+            {browsers.map((s) => <BrowserMockup screen={s} title={p.title} url={siteUrl} />)}
+          </div>
+        )}
+      </div>
+    </section>
+  )}
+
+  <!-- АРХИТЕКТУРА -->
+  {p.architecture.length > 0 && (
+    <section class="carch" id="arch" aria-labelledby="arch-title">
+      <div class="container">
+        <h2 class="h2" id="arch-title" data-split>Как устроено</h2>
+        <ol class="carch__grid">
+          {p.architecture.map((b) => (
+            <li class="carch__node" data-reveal>
+              <h3>{b.title}</h3>
+              <p>{b.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  <!-- РЕШЕНИЯ -->
+  {p.decisions.length > 0 && (
+    <section class="cdec" id="decisions" aria-labelledby="dec-title">
+      <div class="container">
+        <h2 class="h2" id="dec-title" data-split>Технические решения</h2>
+        <ul class="cdec__list">
+          {p.decisions.map((d) => (
+            <li class="cdec__item" data-reveal>
+              <h3 class="cdec__title">{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- ОТЛАДКА -->
+  {p.debugging.length > 0 && (
+    <section class="cdebug on-dark" id="debug" aria-labelledby="debug-title">
+      <div class="container cdebug__grid">
+        <div>
+          <h2 class="h2" id="debug-title" data-split>Что пришлось отладить</h2>
+          <p class="muted cdebug__note">Реальные баги из разработки и как я нашла причину.</p>
+        </div>
+        <ul class="cdebug__list">
+          {p.debugging.map((d) => (
+            <li class="cdebug__item" data-reveal>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- СЛЕДУЮЩИЙ ПРОЕКТ -->
+  <section class="cnext" aria-label="Следующий проект">
+    <a class="cnext__link" href={`/projects/${next.slug}`} data-cursor="Дальше">
+      <span class="container cnext__inner">
+        <span class="cnext__label">Следующий проект</span>
+        <span class="cnext__title display">{next.title}</span>
+        <span class="cnext__kind">{next.kind}</span>
+      </span>
+    </a>
+  </section>
+
+  <Contact />
+</Base>
+
+<style>
+  /* ---------- первый экран ---------- */
+  .chero { padding-top: calc(var(--header-h) + clamp(40px, 6vw, 90px)); padding-bottom: clamp(40px, 5vw, 70px); }
+  .chero__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .chero__back span {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--espresso);
+    color: var(--orange);
+    transform: scaleX(-1);
+    transition: transform 0.4s var(--ease-out);
+  }
+  .chero__back span :global(svg) { width: 14px; height: 14px; }
+  .chero__back:hover span { transform: scaleX(-1) translateX(4px); }
+  .chero__meta {
+    margin-top: clamp(28px, 4vw, 48px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    color: var(--ink-soft);
+  }
+  .chero__status {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--milk-2);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .chero__status.is-com { background: var(--orange); }
+  .chero__title {
+    margin-top: 18px;
+    font-size: clamp(3rem, 13vw, 13rem);
+    overflow-wrap: break-word;
+  }
+  .chero__grid {
+    margin-top: clamp(28px, 4vw, 56px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 32px clamp(40px, 6vw, 100px);
+    align-items: end;
+  }
+  .chero__lead { font-size: clamp(1.15rem, 1.7vw, 1.55rem); line-height: 1.45; max-width: 44ch; }
+  .chero__links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chero__note { margin-top: 16px; color: var(--ink-soft); font-size: 0.95rem; }
+
+  /* ---------- обложка ---------- */
+  .ccover__panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--orange);
+    padding: clamp(40px, 7vw, 110px) clamp(20px, 6vw, 110px);
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+  }
+  .ccover__device { position: relative; z-index: 1; width: 100%; display: grid; place-items: center; }
+  .ccover__device :global(.phone) { width: min(70%, 320px); max-width: none; }
+  .ccover__device :global(.browser) { width: min(100%, 1000px); }
+  .ccover__word {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 0;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-display);
+    font-weight: 750;
+    font-size: clamp(4rem, 17vw, 18rem);
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    color: var(--espresso);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  /* ---------- роль и стек ---------- */
+  .crole { padding-block: var(--section-y) calc(var(--section-y) * 0.5); }
+  .crole__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 56px clamp(40px, 7vw, 120px);
+  }
+  .crole__h { margin-bottom: 22px; }
+  .crole__role { font-size: clamp(1.2rem, 1.8vw, 1.6rem); font-weight: 600; line-height: 1.35; }
+  .crole__list { margin-top: 20px; display: grid; gap: 10px; }
+  .crole__list li {
+    position: relative;
+    padding-left: 26px;
+    color: var(--ink-soft);
+  }
+  .crole__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 12px;
+    height: 2px;
+    background: var(--orange);
+  }
+  .crole__stack { margin: 0; border-top: 1.5px solid var(--espresso); }
+  .crole__layer {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 10px 20px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1.5px solid rgb(31 18 11 / 0.15);
+  }
+  .crole__layer dt { font-weight: 700; }
+  .crole__layer dd { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .crole__layer .tag { border-color: rgb(31 18 11 / 0.25); }
+
+  /* ---------- возможности ---------- */
+  .cfeat { padding-block: calc(var(--section-y) * 0.5) var(--section-y); }
+  .cfeat__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 40px clamp(40px, 7vw, 120px);
+    align-items: start;
+  }
+  .cfeat .h2 { font-size: clamp(2.3rem, 5.5vw, 5rem); }
+  .cfeat__list { display: grid; }
+  .cfeat__list li {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 18px;
+    padding: 18px 0;
+    border-top: 1.5px solid rgb(31 18 11 / 0.15);
+    font-size: clamp(1.02rem, 1.3vw, 1.2rem);
+    line-height: 1.45;
+  }
+  .cfeat__list svg { width: 18px; height: 18px; margin-top: 4px; color: var(--orange); }
+
+  /* ---------- экраны ---------- */
+  .cscreens { padding-block: var(--section-y); border-radius: var(--radius-l); }
+  .cscreens__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px 60px;
+    align-items: end;
+    margin-bottom: clamp(40px, 6vw, 80px);
+  }
+  .cscreens__head .h2 { font-size: clamp(2.6rem, 8vw, 7rem); }
+  .cscreens__phones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: clamp(20px, 3vw, 44px);
+  }
+  .cscreens__phones :global(.phone) { max-width: 290px; }
+  .cscreens__browsers {
+    margin-top: clamp(40px, 6vw, 80px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: clamp(32px, 4vw, 56px);
+    max-width: 1240px;
+  }
+  .cscreens :global(.phone__caption),
+  .cscreens :global(.browser__caption) { color: var(--on-dark-soft); }
+
+  /* ---------- архитектура ---------- */
+  .carch { padding-block: var(--section-y); }
+  .carch .h2 { font-size: clamp(2.4rem, 6.5vw, 6rem); margin-bottom: clamp(40px, 6vw, 72px); }
+  .carch__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .carch__node {
+    position: relative;
+    padding: clamp(22px, 2.4vw, 32px);
+    border-radius: var(--radius-m);
+    background: var(--milk-2);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .carch__node:first-child { background: var(--espresso); color: var(--milk); }
+  .carch__node:first-child p { color: var(--on-dark-soft); }
+  .carch__node h3 {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(1.2rem, 1.7vw, 1.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .carch__node p { color: var(--ink-soft); line-height: 1.5; }
+
+  /* ---------- решения ---------- */
+  .cdec { padding-block: 0 var(--section-y); }
+  .cdec .h2 { font-size: clamp(2.2rem, 5.6vw, 5.2rem); margin-bottom: clamp(40px, 6vw, 72px); max-width: 12ch; }
+  .cdec__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 clamp(32px, 5vw, 80px);
+  }
+  .cdec__item { padding: 28px 0; border-top: 1.5px solid var(--espresso); }
+  .cdec__title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .cdec__item p { color: var(--ink-soft); line-height: 1.55; max-width: 52ch; }
+
+  /* ---------- отладка ---------- */
+  .cdebug { padding-block: var(--section-y); }
+  .cdebug__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 40px clamp(40px, 7vw, 120px);
+    align-items: start;
+  }
+  .cdebug .h2 { font-size: clamp(2.2rem, 5vw, 4.6rem); }
+  .cdebug__note { margin-top: 20px; max-width: 34ch; }
+  .cdebug__list { display: grid; gap: 14px; }
+  .cdebug__item {
+    padding: clamp(22px, 2.5vw, 32px);
+    border-radius: var(--radius-m);
+    background: rgb(243 235 223 / 0.06);
+    border-left: 4px solid var(--orange);
+  }
+  .cdebug__item h3 { font-weight: 700; font-size: 1.15rem; margin-bottom: 8px; color: var(--milk); }
+  .cdebug__item p { color: var(--on-dark-soft); line-height: 1.55; }
+
+  /* ---------- следующий ---------- */
+  .cnext { background: var(--espresso); }
+  .cnext__link {
+    display: block;
+    text-decoration: none;
+    color: var(--milk);
+    border-top: 1px solid rgb(243 235 223 / 0.1);
+    transition: background-color 0.5s var(--ease-out), color 0.5s;
+  }
+  .cnext__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-block: clamp(56px, 9vw, 130px);
+  }
+  .cnext__label { color: var(--on-dark-soft); }
+  .cnext__title { font-size: clamp(3rem, 12vw, 11rem); transition: transform 0.6s var(--ease-out); }
+  .cnext__kind { color: var(--on-dark-soft); }
+  .cnext__link:hover { background: var(--brown); }
+  .cnext__link:hover .cnext__title { color: var(--orange); transform: translateX(1.5vw); }
+
+  @media (max-width: 1000px) {
+    .carch__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 900px) {
+    .chero__grid, .crole__grid, .cfeat__grid, .cscreens__head, .cdebug__grid { grid-template-columns: 1fr; }
+    .cdec__list { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .carch__grid { grid-template-columns: 1fr; }
+    .carch__node { min-height: 0; gap: 10px; justify-content: flex-start; }
+    .crole__layer { grid-template-columns: 1fr; }
+    .cscreens__phones {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: min(64%, 250px);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 12px;
+      margin-inline: calc(-1 * var(--pad-x));
+      padding-inline: var(--pad-x);
+      scroll-padding-inline: var(--pad-x);
+    }
+    .cscreens__phones :global(.phone) { scroll-snap-align: start; }
+    .chero__links :global(.btn) { width: 100%; justify-content: space-between; }
+    .chero__links :global(.btn--ghost) { justify-content: center; }
+  }
+</style>

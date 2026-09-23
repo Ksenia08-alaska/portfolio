@@ -1,0 +1,137 @@
+---
+// Окно браузера со скроллом внутри. Если src нет — заглушка в стиле сайта.
+import type { Screen } from '../content/site';
+import { resolveMedia } from '../content/media';
+interface Props {
+  screen: Screen;
+  title?: string;
+  url?: string;
+  scroll?: boolean;
+}
+const { screen, title = '', url = '', scroll = true } = Astro.props;
+const src = resolveMedia(screen.src);
+const host = url ? url.replace(/^https?:\/\//, '').replace(/\/$/, '') : '';
+---
+<figure class="browser">
+  <div class="browser__body">
+    <div class="browser__bar" aria-hidden="true">
+      <span class="browser__dots"><i></i><i></i><i></i></span>
+      <span class="browser__url">{host || title}</span>
+    </div>
+    {src ? (
+      <div class="browser__screen" data-shot-frame={scroll ? '' : undefined}>
+        {scroll ? (
+          <button class="shot" type="button" data-shot={src} data-shot-alt={screen.alt} data-cursor="Открыть" aria-label={`Открыть скрин целиком: ${screen.alt}`}>
+            <img src={src} alt={screen.alt} loading="lazy" decoding="async" width="1440" />
+          </button>
+        ) : (
+          <img src={src} alt={screen.alt} loading="lazy" decoding="async" width="1440" />
+        )}
+      </div>
+    ) : (
+      <div class="browser__screen browser__screen--stub" role="img" aria-label={`${screen.alt} (скриншот появится позже)`}>
+        <div class="bstub">
+          <div class="bstub__nav"><b>{title}</b><span><i></i><i></i><i></i></span></div>
+          <div class="bstub__hero">
+            <div class="bstub__text"><i></i><i></i><i class="short"></i><em></em></div>
+            <div class="bstub__img"></div>
+          </div>
+          <div class="bstub__grid"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    )}
+  </div>
+  {screen.caption && <figcaption class="browser__caption">{screen.caption}</figcaption>}
+</figure>
+
+<style>
+  .browser { width: 100%; }
+  .browser__body {
+    border-radius: 18px;
+    overflow: hidden;
+    background: #140b06;
+    box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.06), 0 40px 70px -35px rgb(20 11 6 / 0.7);
+  }
+  .browser__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 38px;
+    padding: 0 14px;
+  }
+  .browser__dots { display: flex; gap: 6px; }
+  .browser__dots i { width: 10px; height: 10px; border-radius: 50%; background: rgb(243 235 223 / 0.2); }
+  .browser__dots i:first-child { background: var(--orange); }
+  .browser__url {
+    flex: 1;
+    min-width: 0;
+    max-width: 320px;
+    margin-inline: auto;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgb(243 235 223 / 0.08);
+    color: var(--on-dark-soft);
+    font-size: 0.75rem;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .browser__screen {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    scrollbar-width: thin;
+    background: var(--milk-2);
+  }
+  .browser__screen img { display: block; width: 100%; height: auto; min-height: 100%; object-fit: cover; object-position: top center; }
+  .browser__screen .shot { all: unset; display: block; width: 100%; min-height: 100%; cursor: zoom-in; }
+  .browser__screen .shot:focus-visible { outline: 3px solid var(--orange); outline-offset: -3px; }
+  .browser__screen .shot img { transform: translate3d(0, var(--pan, 0px), 0); transition: transform var(--pan-dur, 0.8s) cubic-bezier(0.45, 0, 0.55, 1); will-change: transform; }
+  .browser__screen:not(.browser__screen--stub) { background: var(--espresso); }
+  .browser__caption { margin-top: 14px; font-size: 0.95rem; font-weight: 500; }
+
+  .browser__screen--stub { overflow: hidden; }
+  .bstub {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6%;
+    padding: 4% 5%;
+    background: #1d2a22;
+    color: #e9e2d2;
+  }
+  .bstub i { display: block; height: 10px; border-radius: 99px; background: rgb(233 226 210 / 0.25); }
+  .bstub__nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .bstub__nav b { font-family: var(--font-display); font-size: clamp(0.6rem, 1.2vw, 0.85rem); letter-spacing: 0.02em; white-space: nowrap; }
+  .bstub__nav span { display: flex; gap: 10px; }
+  .bstub__nav span i { width: clamp(20px, 4vw, 44px); height: 6px; }
+  .bstub__hero { flex: 1; display: grid; grid-template-columns: 1fr 1.1fr; gap: 6%; align-items: center; }
+  .bstub__text { display: flex; flex-direction: column; gap: 10px; }
+  .bstub__text i { height: clamp(10px, 2vw, 20px); }
+  .bstub__text i.short { width: 60%; }
+  .bstub__text em { display: block; width: 45%; height: clamp(16px, 3vw, 30px); border-radius: 99px; background: var(--orange); }
+  .bstub__img { height: 100%; min-height: 60px; border-radius: 12px; background: linear-gradient(160deg, #4d6b55, #2c3f33 60%, #c9b28a); }
+  .bstub__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4%; }
+  .bstub__grid i { height: clamp(24px, 5vw, 60px); border-radius: 10px; background: rgb(233 226 210 / 0.1); }
+  /* подсказка «листайте», пока экран не долистан */
+  .browser__body { position: relative; }
+  .browser__body::after {
+    content: 'Открыть целиком';
+    white-space: nowrap;
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 3;
+    transform: translate(-50%, 8px);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgb(31 18 11 / 0.82);
+    color: var(--milk);
+    font-size: 0.78rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s var(--ease-out);
+  }
+  .browser__body:global(.has-more)::after { opacity: 1; transform: translate(-50%, 0); }
+</style>

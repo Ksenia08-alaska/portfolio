@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+---
+<Base title="Страница не найдена — Ксения Криштопова">
+  <section class="nf">
+    <div class="container">
+      <p class="nf__code display">404</p>
+      <h1 class="h3">Такой страницы нет</h1>
+      <p class="muted nf__text">Возможно, ссылка устарела. Все работы — на главной.</p>
+      <Button href="/#works" label="К работам" arrow="right" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 100svh; display: grid; align-items: center; padding-block: 140px 80px; }
+  .nf__code { font-size: clamp(6rem, 30vw, 22rem); color: var(--orange); }
+  .nf__text { margin: 12px 0 28px; }
+</style>

@@ -1,0 +1,82 @@
+---
+import { site } from '../content/site';
+---
+<section class="skills" id="skills" aria-labelledby="skills-title">
+  <div class="container">
+    <div class="skills__head">
+      <h2 class="h2" id="skills-title" data-split>Что умею</h2>
+      <p class="muted skills__note">Технологии, с которыми работаю в реальных проектах. Названия — как в документации, на английском.</p>
+    </div>
+    <ul class="skills__list">
+      {site.skills.map((g) => (
+        <li class="skills__row" data-skill-row>
+          <h3 class="skills__group">{g.group}</h3>
+          <ul class="skills__items">
+            {g.items.map((s) => <li class="skills__chip">{s}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .skills { padding-block: var(--section-y); background: var(--milk-2); }
+  .skills__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px 60px;
+    align-items: end;
+    margin-bottom: clamp(40px, 6vw, 80px);
+  }
+  .skills__head .h2 { font-size: clamp(2.6rem, 8vw, 7.5rem); }
+  .skills__note { max-width: 40ch; }
+  .skills__list { border-top: 1.5px solid var(--espresso); }
+  .skills__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: 16px 40px;
+    align-items: center;
+    padding: clamp(20px, 2.6vw, 34px) clamp(0px, 1.5vw, 20px);
+    border-bottom: 1.5px solid var(--espresso);
+    isolation: isolate;
+  }
+  .skills__row::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--orange);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.55s var(--ease-out);
+  }
+  @media (hover: hover) {
+    .skills__row:hover::before { transform: scaleY(1); }
+    .skills__row:hover .skills__chip { border-color: var(--espresso); background: rgb(31 18 11 / 0.06); }
+  }
+  .skills__group {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(1.5rem, 3.2vw, 2.8rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .skills__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skills__chip {
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1.5px solid rgb(31 18 11 / 0.25);
+    font-weight: 500;
+    line-height: 1.3;
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  @media (max-width: 800px) {
+    .skills__head, .skills__row { grid-template-columns: 1fr; }
+  }
+</style>

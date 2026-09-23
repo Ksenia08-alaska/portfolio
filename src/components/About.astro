@@ -1,0 +1,116 @@
+---
+import { site } from '../content/site';
+const a = site.about;
+---
+<section class="about on-dark" id="about" aria-labelledby="about-title">
+  <div class="container about__inner">
+    <div class="about__side">
+      <h2 class="h2" id="about-title" data-split>{a.title}</h2>
+      <dl class="about__facts">
+        {site.facts.map((f) => (
+          <div class="about__fact">
+            <dt class="about__fact-value">{f.value}</dt>
+            <dd class="about__fact-label">{f.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    <div class="about__main">
+      <div class="about__text">
+        {a.paragraphs.map((p, i) => <p class:list={{ 'about__first': i === 0 }} data-reveal>{p}</p>)}
+      </div>
+      <div class="about__cards">
+        <div class="about__card">
+          <p class="about__card-label">Учёба</p>
+          <p>{a.study}</p>
+        </div>
+        <div class="about__card about__card--accent">
+          <p class="about__card-label">Практика</p>
+          <p>{a.practiceText}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding-block: var(--section-y);
+  }
+  .about__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 7vw, 120px);
+  }
+  .about__side .h2 { font-size: clamp(2.6rem, 7vw, 6.5rem); }
+  .about__facts {
+    margin: clamp(32px, 5vw, 64px) 0 0;
+    display: grid;
+    gap: 0;
+  }
+  .about__fact {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid rgb(243 235 223 / 0.14);
+  }
+  .about__fact-value {
+    min-width: 2.2ch;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 4.4vw, 3.8rem);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--orange);
+  }
+  .about__fact-label { margin: 0; color: var(--on-dark-soft); line-height: 1.4; }
+  .about__text {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    line-height: 1.65;
+    color: var(--on-dark-soft);
+    max-width: 62ch;
+  }
+  .about__first {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.3rem, 2.1vw, 1.8rem);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--milk);
+  }
+  .about__cards {
+    margin-top: clamp(36px, 5vw, 60px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .about__card {
+    padding: 24px;
+    border-radius: var(--radius-m);
+    background: rgb(243 235 223 / 0.06);
+    line-height: 1.45;
+  }
+  .about__card--accent { background: var(--orange); color: var(--espresso); }
+  .about__card-label { font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; opacity: 0.75; }
+  @media (max-width: 900px) {
+    .about__inner { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .about__cards { grid-template-columns: 1fr; }
+    .about__first {
+      font-family: var(--font-text);
+      font-weight: 600;
+      font-size: 1.16rem;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    .about__text { gap: 16px; font-size: 1rem; }
+    .about__card { padding: 20px; }
+  }
+</style>

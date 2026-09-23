@@ -1,0 +1,97 @@
+---
+import { site } from '../content/site';
+import Button from './Button.astro';
+import Arrow from './Arrow.astro';
+const c = site.contacts;
+---
+<section class="contact on-orange" id="contact" aria-labelledby="contact-title" data-contact>
+  <div class="container">
+    <h2 class="contact__title display" id="contact-title" data-split>
+      Есть место на практике или задача?
+    </h2>
+    <div class="contact__grid">
+      <div class="contact__main">
+        <p class="contact__text">Быстрее всего ответ приходит в Telegram. Для официальных писем есть почта.</p>
+        <div class="contact__actions">
+          <Button href={site.cta.url} label={site.cta.label} variant="dark" external />
+          {site.resume && <Button href={site.resume} label="Резюме, PDF" variant="ghost" external />}
+        </div>
+      </div>
+      <ul class="contact__list">
+        <li>
+          <span class="contact__label">Почта</span>
+          <span class="contact__value">
+            <a href={c.email.url}>{c.email.label}</a>
+            <button class="contact__copy" type="button" data-copy={c.email.label}>Копировать</button>
+          </span>
+        </li>
+        <li>
+          <span class="contact__label">Telegram</span>
+          <a class="contact__value" href={c.telegram.url} target="_blank" rel="noopener">{c.telegram.label} <Arrow /></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding-block: var(--section-y) calc(var(--section-y) * 0.7);
+  }
+  .contact__title {
+    font-size: clamp(2.3rem, 7.4vw, 7.2rem);
+    max-width: 14ch;
+    overflow-wrap: break-word;
+  }
+  .contact__grid {
+    margin-top: clamp(40px, 6vw, 90px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px clamp(40px, 6vw, 100px);
+    align-items: end;
+  }
+  .contact__text { font-size: clamp(1.1rem, 1.5vw, 1.35rem); max-width: 34ch; line-height: 1.45; }
+  .contact__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .contact__list li {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 18px 0;
+    border-top: 1.5px solid rgb(31 18 11 / 0.25);
+  }
+  .contact__list li:last-child { border-bottom: 1.5px solid rgb(31 18 11 / 0.25); }
+  .contact__label { font-size: 0.9rem; opacity: 0.75; }
+  .contact__value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    font-weight: 700;
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    text-decoration: none;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .contact__value a { text-decoration: none; overflow-wrap: anywhere; }
+  .contact__value :global(svg) { width: 14px; height: 14px; flex: none; }
+  .contact a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .contact__copy {
+    padding: 5px 12px;
+    border: 1.5px solid var(--espresso);
+    border-radius: 999px;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .contact__copy:hover { background: var(--espresso); color: var(--orange); }
+  :global(html:not(.js)) .contact__copy { display: none; }
+  @media (max-width: 900px) {
+    .contact__grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    .contact__list li { grid-template-columns: 1fr; gap: 4px; }
+    .contact__actions :global(.btn) { width: 100%; justify-content: space-between; }
+  }
+</style>

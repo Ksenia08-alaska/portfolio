@@ -1,0 +1,84 @@
+---
+// Навигация внутри кейса: всегда видно, где ты и что дальше
+interface Props { items: { id: string; label: string }[] }
+const { items } = Astro.props;
+---
+<nav class="casenav" aria-label="Разделы кейса" data-casenav>
+  <div class="casenav__bar">
+    <a class="casenav__back" href="/#works" aria-label="Все работы">←</a>
+    <ul class="casenav__list" data-lenis-prevent>
+      {items.map((it) => (
+        <li><a href={`#${it.id}`} data-casenav-link>{it.label}</a></li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .casenav {
+    position: sticky;
+    top: calc(var(--header-h) + 8px);
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    padding-inline: var(--pad-x);
+    margin-block: 0 clamp(8px, 2vw, 24px);
+    pointer-events: none;
+    transition: top 0.4s var(--ease-out);
+  }
+  :global(html.header-hidden) .casenav { top: 10px; }
+  .casenav__bar {
+    pointer-events: auto;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    border-radius: 999px;
+    background: rgba(31, 18, 11, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(31, 18, 11, 0.18);
+  }
+  .casenav__back {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--orange);
+    color: var(--espresso);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .casenav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    min-width: 0;
+    position: relative;
+    scroll-padding-inline: 8px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
+  .casenav__list::-webkit-scrollbar { display: none; }
+  .casenav__list a {
+    display: block;
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 999px;
+    color: var(--on-dark-soft);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background 0.25s, color 0.25s;
+  }
+  .casenav__list a:hover { color: var(--milk); }
+  .casenav__list a.is-active { background: var(--milk); color: var(--espresso); }
+  .casenav__list a:focus-visible, .casenav__back:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+</style>

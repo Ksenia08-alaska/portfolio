@@ -1,0 +1,162 @@
+---
+// Телефон с прокруткой внутри экрана. Если src нет — рисуем заглушку в стиле сайта.
+import type { Screen } from '../content/site';
+import { resolveMedia } from '../content/media';
+interface Props {
+  screen: Screen;
+  title?: string;
+  tone?: 'dark' | 'milk';
+  scroll?: boolean;
+}
+const { screen, title = '', tone = 'dark', scroll = true } = Astro.props;
+const src = resolveMedia(screen.src);
+---
+<figure class:list={['phone', `phone--${tone}`]}>
+  <div class="phone__body">
+    <div class="phone__island" aria-hidden="true"></div>
+    {src ? (
+      <div class="phone__screen" data-shot-frame={scroll ? '' : undefined}>
+        {scroll ? (
+          <button class="shot" type="button" data-shot={src} data-shot-alt={screen.alt} data-cursor="Открыть" aria-label={`Открыть скрин целиком: ${screen.alt}`}>
+            <img src={src} alt={screen.alt} loading="lazy" decoding="async" width="390" />
+          </button>
+        ) : (
+          <img src={src} alt={screen.alt} loading="lazy" decoding="async" width="390" />
+        )}
+      </div>
+    ) : (
+      <div class="phone__screen phone__screen--stub" role="img" aria-label={`${screen.alt} (скриншот появится позже)`}>
+        <div class="stub">
+          <div class="stub__top"><i></i><b>{title}</b><i></i></div>
+          <div class="stub__hero"><span>{title.slice(0, 2)}</span></div>
+          <div class="stub__row"><i></i><i></i></div>
+          <div class="stub__card"><i></i><i></i><i></i></div>
+          <div class="stub__card stub__card--accent"><i></i><i></i></div>
+          <div class="stub__row stub__row--3"><i></i><i></i><i></i></div>
+          <div class="stub__card"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    )}
+  </div>
+  {screen.caption && <figcaption class="phone__caption">{screen.caption}</figcaption>}
+</figure>
+
+<style>
+  .phone {
+    --w: 100%;
+    width: var(--w);
+    max-width: 300px;
+    container-type: inline-size;
+    margin-inline: auto;
+  }
+  .phone__body {
+    position: relative;
+    aspect-ratio: 9 / 19.2;
+    padding: 9px;
+    border-radius: 46px;
+    background: #140b06;
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.08), 0 40px 60px -30px rgb(20 11 6 / 0.7);
+  }
+  .phone__island {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    z-index: 2;
+    width: 30%;
+    height: 22px;
+    border-radius: 999px;
+    background: #140b06;
+    transform: translateX(-50%);
+  }
+  .phone__screen {
+    position: relative;
+    height: 100%;
+    border-radius: 38px;
+    overflow: hidden;
+    scrollbar-width: none;
+    background: var(--milk-2);
+  }
+  .phone__screen::-webkit-scrollbar { display: none; }
+  .phone__screen img { display: block; width: 100%; height: auto; min-height: 100%; object-fit: cover; object-position: top center; }
+  .phone__screen .shot { all: unset; display: block; width: 100%; min-height: 100%; cursor: zoom-in; }
+  .phone__screen .shot:focus-visible { outline: 3px solid var(--orange); outline-offset: -3px; }
+  .phone__screen .shot img { transform: translate3d(0, var(--pan, 0px), 0); transition: transform var(--pan-dur, 0.8s) cubic-bezier(0.45, 0, 0.55, 1); will-change: transform; }
+  .phone__screen:not(.phone__screen--stub) { background: var(--espresso); }
+  .phone__caption {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  /* ---------- заглушка ---------- */
+  .phone__screen--stub { overflow: hidden; }
+  .stub {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 52px 14px 14px;
+    background: var(--stub-bg);
+  }
+  .phone--dark { --stub-bg: #2a1a10; --stub-card: rgb(243 235 223 / 0.08); --stub-line: rgb(243 235 223 / 0.22); --stub-text: var(--milk); }
+  .phone--milk { --stub-bg: #efe4d4; --stub-card: rgb(31 18 11 / 0.07); --stub-line: rgb(31 18 11 / 0.2); --stub-text: var(--espresso); }
+  .stub i { display: block; height: 8px; border-radius: 99px; background: var(--stub-line); }
+  .stub__top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--stub-text);
+    font-size: 0.75rem;
+  }
+  .stub__top i { width: 18px; height: 18px; border-radius: 50%; }
+  .stub__top b { flex: 1; min-width: 0; font-size: clamp(0.62rem, 5.2cqi, 0.8rem); text-align: center; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stub__hero {
+    flex: 0 0 30%;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: var(--orange);
+    color: var(--espresso);
+    font-family: var(--font-display);
+    font-weight: 750;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    letter-spacing: -0.05em;
+  }
+  .stub__row { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
+  .stub__row--3 { grid-template-columns: repeat(3, 1fr); }
+  .stub__row i { height: 34px; border-radius: 12px; background: var(--stub-card); }
+  .stub__card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 16px;
+    background: var(--stub-card);
+  }
+  .stub__card i:nth-child(1) { width: 60%; }
+  .stub__card i:nth-child(2) { width: 90%; }
+  .stub__card i:nth-child(3) { width: 40%; }
+  .stub__card--accent { background: rgb(255 91 20 / 0.22); }
+  /* подсказка «листайте», пока экран не долистан */
+  .phone__body { position: relative; }
+  .phone__body::after {
+    content: 'Открыть целиком';
+    white-space: nowrap;
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 3;
+    transform: translate(-50%, 8px);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgb(31 18 11 / 0.82);
+    color: var(--milk);
+    font-size: 0.78rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s var(--ease-out);
+  }
+  .phone__body:global(.has-more)::after { opacity: 1; transform: translate(-50%, 0); }
+</style>

@@ -1,0 +1,184 @@
+---
+import type { Project } from '../content/site';
+import PhoneMockup from './PhoneMockup.astro';
+import BrowserMockup from './BrowserMockup.astro';
+import Arrow from './Arrow.astro';
+import Scheme from './Scheme.astro';
+
+interface Props { project: Project; index: number }
+const { project: p, index } = Astro.props;
+const tones = ['orange', 'milk', 'brown'] as const;
+const tone = tones[index % tones.length];
+const reverse = index % 2 === 1;
+const site = p.links[0]?.url;
+---
+<article class:list={['pcard', `pcard--${tone}`, { 'pcard--reverse': reverse }]} data-pcard>
+  <div class="pcard__media" data-cursor="Кейс">
+    <div class="pcard__device" data-parallax>
+      {p.cover.device === 'scheme'
+        ? <Scheme steps={p.scheme ?? []} tone={tone === 'brown' ? 'milk' : 'dark'} />
+        : p.cover.device === 'phone'
+        ? <PhoneMockup screen={p.cover} title={p.title} tone={tone === 'milk' ? 'dark' : tone === 'orange' ? 'dark' : 'milk'} scroll={false} />
+        : <BrowserMockup screen={p.cover} title={p.title} url={site} scroll={false} />}
+    </div>
+    <span class="pcard__index" aria-hidden="true">{p.title}</span>
+  </div>
+
+  <div class="pcard__info">
+    <div class="pcard__meta">
+      <span class:list={['pcard__status', { 'pcard__status--com': p.commercial }]}>{p.status}</span>
+      <span class="pcard__kind">{p.kind}</span>
+    </div>
+    <h3 class="pcard__title">
+      <a href={`/projects/${p.slug}`} class="pcard__link" data-cursor="Кейс">{p.title}</a>
+    </h3>
+    <p class="pcard__summary">{p.summary}</p>
+    <ul class="pcard__tags" aria-label="Технологии">
+      {p.tags.map((t) => <li class="tag">{t}</li>)}
+    </ul>
+    <span class="pcard__more" aria-hidden="true">
+      Смотреть кейс <span class="pcard__more-dot"><Arrow dir="right" /></span>
+    </span>
+  </div>
+</article>
+
+<style>
+  .pcard {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 80px);
+    align-items: center;
+  }
+  .pcard--reverse .pcard__media { order: 2; }
+
+  .pcard__media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 5 / 4;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    padding: clamp(24px, 4vw, 56px);
+    isolation: isolate;
+  }
+  .pcard--orange .pcard__media { background: var(--orange); }
+  .pcard--milk .pcard__media { background: var(--milk-2); }
+  .pcard--brown .pcard__media { background: var(--brown-2); }
+
+  .pcard__device {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    transition: transform 0.9s var(--ease-out);
+  }
+  .pcard__device :global(.phone) { width: min(48%, 250px); max-width: none; }
+  .pcard__device :global(.browser) { width: 100%; }
+  .pcard:hover .pcard__device { transform: scale(1.03) rotate(-1.5deg); }
+
+  .pcard__index {
+    position: absolute;
+    left: 50%;
+    bottom: -0.18em;
+    z-index: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-weight: 750;
+    font-size: clamp(3.4rem, 9vw, 9rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.16;
+    color: var(--espresso);
+    pointer-events: none;
+  }
+  .pcard--brown .pcard__index { color: var(--milk); opacity: 0.1; }
+
+  .pcard__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    font-size: 0.92rem;
+  }
+  .pcard__status {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgb(243 235 223 / 0.1);
+    color: var(--milk);
+    white-space: nowrap;
+  }
+  .pcard__status--com {
+    background: var(--orange);
+    color: var(--espresso);
+    font-weight: 600;
+  }
+  .pcard__kind { color: var(--on-dark-soft); }
+  .pcard__title {
+    margin-top: 18px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 5.2vw, 4.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+  .pcard__link { text-decoration: none; }
+  .pcard__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+  .pcard__link:focus-visible { outline: none; }
+  .pcard__link:focus-visible::after {
+    outline: 3px solid var(--orange);
+    outline-offset: 6px;
+    border-radius: var(--radius-l);
+  }
+  .pcard__summary {
+    margin-top: 18px;
+    max-width: 42ch;
+    font-size: clamp(1.02rem, 1.25vw, 1.2rem);
+    line-height: 1.5;
+    color: var(--on-dark-soft);
+  }
+  .pcard__tags {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pcard__tags .tag { border-color: rgb(243 235 223 / 0.22); color: var(--milk); }
+  .pcard__more {
+    margin-top: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+  }
+  .pcard__more-dot {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: var(--espresso);
+    transition: transform 0.5s var(--ease-out);
+  }
+  .pcard__more-dot :global(svg) { width: 16px; height: 16px; }
+  .pcard:hover .pcard__more-dot { transform: translateX(8px); }
+
+  @media (max-width: 900px) {
+    .pcard { grid-template-columns: 1fr; }
+    .pcard--reverse .pcard__media { order: 0; }
+    .pcard__media { aspect-ratio: 4 / 3.4; }
+  }
+  @media (max-width: 520px) {
+    .pcard__media { aspect-ratio: 4 / 4.4; padding: 20px; }
+    .pcard__device :global(.phone) { width: min(62%, 230px); }
+  }
+</style>

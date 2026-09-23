@@ -1,0 +1,99 @@
+---
+import { site } from '../content/site';
+import ProjectCard from './ProjectCard.astro';
+import Arrow from './Arrow.astro';
+---
+<section class="works on-dark" id="works" aria-labelledby="works-title">
+  <div class="container">
+    <div class="works__head">
+      <h2 class="h2" id="works-title" data-split>Работы</h2>
+      <p class="works__text muted">
+        Коммерческие и свои проекты, которыми пользуются реальные люди. Код закрыт договорённостями с заказчиком, поэтому в каждом кейсе рассказываю, что и как сделано.
+      </p>
+    </div>
+    <div class="works__list">
+      {site.projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+    </div>
+    {site.moreSites.length > 0 && (
+      <div class="works__more">
+        <p class="works__more-title">Сайты, сделанные для SV House</p>
+        <ul class="works__more-list">
+          {site.moreSites.map((l) => (
+            <li>
+              <a href={l.url} target="_blank" rel="noopener" data-cursor="Открыть">
+                <span class="works__more-name">{l.label}</span>
+                <span class="works__more-url">{l.url.replace('https://', '')}</span>
+                <span class="works__more-arrow"><Arrow /></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .works__more {
+    margin-top: clamp(80px, 11vw, 160px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 16px 60px;
+    align-items: start;
+  }
+  .works__more-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.2rem, 2vw, 1.7rem);
+    line-height: 1.15;
+  }
+  .works__more-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(243, 235, 223, 0.18); }
+  .works__more-list li { border-bottom: 1px solid rgba(243, 235, 223, 0.18); }
+  .works__more-list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px 24px;
+    padding: 20px 4px;
+    text-decoration: none;
+    transition: color 0.3s, padding 0.4s var(--ease-out);
+  }
+  .works__more-list a:hover { color: var(--orange); padding-left: 14px; }
+  .works__more-name { font-weight: 600; font-size: clamp(1.05rem, 1.4vw, 1.25rem); min-width: 0; }
+  .works__more-url { color: var(--on-dark-soft); font-size: 0.92rem; overflow-wrap: anywhere; }
+  .works__more-arrow { display: inline-flex; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(243, 235, 223, 0.3); align-items: center; justify-content: center; }
+  .works__more-arrow :global(svg) { width: 16px; height: 16px; }
+  .works__more-list a:hover .works__more-arrow { background: var(--orange); border-color: var(--orange); color: var(--espresso); }
+  @media (max-width: 760px) {
+    .works__more { grid-template-columns: 1fr; }
+    .works__more-list a { grid-template-columns: minmax(0, 1fr) auto; }
+    .works__more-url { grid-column: 1; grid-row: 2; }
+    .works__more-arrow { grid-row: 1 / span 2; grid-column: 2; }
+  }
+
+  .works {
+    padding-block: var(--section-y);
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    margin-top: calc(-1 * var(--radius-l));
+    position: relative;
+    z-index: 1;
+  }
+  .works__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px 60px;
+    align-items: end;
+    margin-bottom: clamp(56px, 8vw, 120px);
+  }
+  .works__head .h2 { font-size: clamp(3rem, 8.4vw, 9rem); }
+  .works__text { max-width: 46ch; font-size: clamp(1.02rem, 1.3vw, 1.2rem); }
+  .works__list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(80px, 11vw, 160px);
+  }
+  @media (max-width: 900px) {
+    .works__head { grid-template-columns: 1fr; }
+  }
+</style>

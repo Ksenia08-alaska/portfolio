@@ -1,0 +1,22 @@
+---
+import Arrow from './Arrow.astro';
+interface Props {
+  href: string;
+  label: string;
+  variant?: 'primary' | 'dark' | 'ghost';
+  external?: boolean;
+  class?: string;
+  arrow?: 'right' | 'up-right' | 'down';
+}
+const { href, label, variant = 'primary', external = false, class: cls = '', arrow = 'up-right' } = Astro.props;
+const variantClass = variant === 'dark' ? 'btn--dark' : variant === 'ghost' ? 'btn--ghost' : '';
+---
+<a
+  class:list={['btn', variantClass, cls]}
+  href={href}
+  data-magnetic
+  {...(external ? { target: '_blank', rel: 'noopener' } : {})}
+>
+  <span class="btn__label">{label}</span>
+  {variant !== 'ghost' && <span class="btn__dot"><Arrow dir={arrow} /></span>}
+</a>

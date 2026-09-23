@@ -1,0 +1,281 @@
+---
+import { site } from '../content/site';
+import Button from './Button.astro';
+import Arrow from './Arrow.astro';
+
+const { person, projects } = site;
+const ring = `${site.marquee.slice(0, 6).join(' • ')} • `;
+---
+<section class="hero" data-hero>
+  <div class="container hero__inner">
+    <p class="hero__status" data-hero-fade>
+      <span class="hero__pulse" aria-hidden="true"></span>
+      <span class="hero__status-full">{person.status}: {person.practice}</span>
+      <span class="hero__status-short">Ищу практику: 21.01 – 28.04.2027</span>
+    </p>
+
+    <h1 class="hero__title display" aria-label={`${person.fullName} — ${person.role}`}>
+      <span class="hero__line hero__line--1" aria-hidden="true" data-hero-line>{person.firstName}</span>
+      <span class="hero__line hero__line--2" aria-hidden="true" data-hero-line>{person.lastName}</span>
+    </h1>
+
+    <div class="hero__badge" aria-hidden="true" data-hero-badge>
+      <svg viewBox="0 0 200 200" class="hero__ring" data-hero-ring>
+        <defs>
+          <path id="ring-path" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
+        </defs>
+        <text><textPath href="#ring-path" textLength="485">{ring}</textPath></text>
+      </svg>
+      <span class="hero__badge-core"><Arrow dir="down" /></span>
+    </div>
+
+    <div class="hero__bottom">
+      <div class="hero__intro" data-hero-fade>
+        <p class="hero__role">{person.role}</p>
+        <p class="hero__tagline">{person.tagline}</p>
+        <div class="hero__actions">
+          <Button href={site.cta.url} label={site.cta.label} external />
+          <Button href="#works" label="Смотреть работы" variant="ghost" />
+        </div>
+      </div>
+
+      <aside class="hero__now on-dark" aria-labelledby="now-title" data-hero-fade data-ticker>
+        <p class="hero__now-title" id="now-title">Работают прямо сейчас</p>
+        <ol class="hero__now-list">
+          {projects.map((p, i) => (
+            <li class="hero__now-item" data-ticker-item>
+              <a href={`/projects/${p.slug}`} data-cursor="Кейс">
+                <span class="hero__now-name">{p.title}</span>
+                <span class="hero__now-kind">{p.kind}</span>
+                <span class="hero__now-arrow"><Arrow /></span>
+              </a>
+              <span class="hero__now-bar" aria-hidden="true"><i></i></span>
+            </li>
+          ))}
+        </ol>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + clamp(28px, 5vw, 64px));
+    padding-bottom: clamp(36px, 5vw, 64px);
+    display: flex;
+  }
+  .hero__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero__status-short { display: none; }
+  .hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    align-self: flex-start;
+    padding: 9px 18px 9px 14px;
+    border-radius: 999px;
+    background: var(--milk-2);
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+  .hero__pulse {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+  .hero__pulse::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid var(--orange);
+    animation: pulse 2.2s var(--ease-out) infinite;
+  }
+  @keyframes pulse {
+    from { transform: scale(0.5); opacity: 1; }
+    to { transform: scale(1.8); opacity: 0; }
+  }
+
+  .hero__title {
+    margin-top: clamp(28px, 5vw, 56px);
+    display: flex;
+    flex-direction: column;
+    font-size: min(13.5rem, calc((100vw - 2 * var(--pad-x)) / 8.3));
+    line-height: 0.9;
+  }
+  .hero__line {
+    display: block;
+    white-space: nowrap;
+  }
+  .hero__line--2 {
+    align-self: flex-end;
+    color: var(--brown-2);
+  }
+
+  .hero__badge {
+    position: absolute;
+    right: calc(var(--pad-x) + 2%);
+    top: calc(clamp(28px, 5vw, 56px) - 4px);
+    width: clamp(110px, 11vw, 170px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+  .hero__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: var(--espresso);
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+  .hero__badge-core {
+    display: grid;
+    place-items: center;
+    width: 50%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--orange);
+    color: var(--espresso);
+  }
+  .hero__badge-core :global(svg) { width: 34%; height: 34%; }
+
+  .hero__bottom {
+    margin-top: auto;
+    padding-top: clamp(36px, 5vw, 72px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 80px);
+    align-items: end;
+  }
+  .hero__role {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .hero__tagline {
+    margin-top: 14px;
+    max-width: 44ch;
+    font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .hero__actions {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero__now {
+    border-radius: var(--radius-m);
+    padding: clamp(20px, 2.4vw, 30px);
+  }
+  .hero__now-title {
+    font-size: 0.9rem;
+    color: var(--on-dark-soft);
+    margin-bottom: 8px;
+  }
+  .hero__now-item {
+    position: relative;
+    border-top: 1px solid rgb(243 235 223 / 0.12);
+  }
+  .hero__now-item a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'name arrow' 'kind arrow';
+    column-gap: 16px;
+    padding: 14px 0;
+    text-decoration: none;
+  }
+  .hero__now-name {
+    grid-area: name;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+    letter-spacing: -0.02em;
+    transition: color 0.35s;
+  }
+  .hero__now-kind {
+    grid-area: kind;
+    font-size: 0.9rem;
+    color: var(--on-dark-soft);
+  }
+  .hero__now-arrow {
+    grid-area: arrow;
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgb(243 235 223 / 0.2);
+    transition: background-color 0.35s, color 0.35s, transform 0.5s var(--ease-out), border-color 0.35s;
+  }
+  .hero__now-arrow :global(svg) { width: 14px; height: 14px; }
+  .hero__now-item a:hover .hero__now-name,
+  .hero__now-item.is-active .hero__now-name { color: var(--orange); }
+  .hero__now-item a:hover .hero__now-arrow,
+  .hero__now-item.is-active .hero__now-arrow {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--espresso);
+    transform: rotate(45deg);
+  }
+  .hero__now-bar {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 100%;
+    height: 1px;
+    overflow: hidden;
+  }
+  .hero__now-bar i {
+    display: block;
+    height: 100%;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* до старта анимации прячем, чтобы не мигало; страховка — через 3 с всё видно */
+  :global(html.js:not(.reduce)) [data-hero-line],
+  :global(html.js:not(.reduce)) [data-hero-fade],
+  :global(html.js:not(.reduce)) [data-hero-badge] {
+    visibility: hidden;
+    animation: hero-failsafe 0s 3.5s forwards;
+  }
+  @keyframes hero-failsafe { to { visibility: visible; } }
+
+  @media (max-width: 1100px) {
+    .hero__bottom { grid-template-columns: 1fr; align-items: start; }
+    .hero__badge { top: auto; bottom: auto; }
+  }
+  @media (max-width: 1100px) {
+    .hero__badge { display: none; }
+  }
+  @media (max-width: 760px) {
+    .hero { min-height: auto; }
+    .hero__title { font-size: calc((100vw - 2 * var(--pad-x)) / 8.3); }
+    .hero__line--2 { align-self: flex-start; }
+    .hero__actions :global(.btn) { width: 100%; justify-content: space-between; }
+    .hero__actions :global(.btn--ghost) { justify-content: center; }
+    .hero__status { font-size: 0.88rem; padding: 8px 16px 8px 12px; gap: 10px; }
+    .hero__status-full { display: none; }
+    .hero__status-short { display: inline; white-space: nowrap; }
+  }
+</style>

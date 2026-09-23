@@ -1,0 +1,58 @@
+---
+import { site } from '../content/site';
+import Arrow from './Arrow.astro';
+---
+<div class="sticky-cta" data-sticky-cta>
+  <a class="sticky-cta__btn" href={site.cta.url} target="_blank" rel="noopener">
+    <span>{site.cta.label}</span>
+    <span class="sticky-cta__dot"><Arrow /></span>
+  </a>
+</div>
+
+<style>
+  .sticky-cta {
+    display: none;
+  }
+  @media (max-width: 760px) {
+    .sticky-cta {
+      display: block;
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      z-index: 80;
+      transform: translateY(150%);
+      transition: transform 0.55s var(--ease-out);
+    }
+    .sticky-cta.is-visible { transform: none; }
+    .sticky-cta__btn { min-height: 52px; padding: 6px 6px 6px 20px; font-size: 0.95rem; }
+    .sticky-cta__dot { width: 40px; height: 40px; }
+    /* без JS кнопка просто всегда видна */
+    :global(html:not(.js)) .sticky-cta { transform: none; }
+  }
+  .sticky-cta__btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 58px;
+    padding: 8px 8px 8px 22px;
+    border-radius: 999px;
+    background: var(--orange);
+    color: var(--espresso);
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 14px 30px -12px rgb(31 18 11 / 0.55);
+  }
+  .sticky-cta__dot {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--espresso);
+    color: var(--orange);
+  }
+  .sticky-cta__dot :global(svg) { width: 16px; height: 16px; }
+</style>

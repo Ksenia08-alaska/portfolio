@@ -1,0 +1,57 @@
+---
+import { site } from '../content/site';
+const letters = [...site.person.initials];
+---
+<div class="intro" data-intro aria-hidden="true">
+  <div class="intro__panel intro__panel--orange" data-intro-orange></div>
+  <div class="intro__panel intro__panel--dark" data-intro-dark>
+    <div class="intro__word">
+      {letters.map((l) => <span class="intro__char" data-intro-char>{l}</span>)}
+    </div>
+    <p class="intro__sub" data-intro-sub>{site.person.role}</p>
+  </div>
+</div>
+
+<style>
+  .intro { display: none; }
+  :global(html.intro) .intro {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    pointer-events: none;
+    /* страховка: если скрипт не загрузился, заставка сама исчезнет */
+    animation: intro-failsafe 0.01s linear 4s forwards;
+  }
+  :global(html.intro) body { overflow: hidden; }
+  @keyframes intro-failsafe { to { visibility: hidden; } }
+  .intro__panel {
+    position: absolute;
+    inset: 0;
+  }
+  .intro__panel--orange { background: var(--orange); }
+  .intro__panel--dark {
+    background: var(--espresso);
+    color: var(--milk);
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 18px;
+  }
+  .intro__word {
+    display: flex;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-weight: 750;
+    font-size: clamp(5rem, 22vw, 16rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: var(--orange);
+  }
+  .intro__char { display: inline-block; }
+  .intro__sub {
+    font-size: 1rem;
+    color: var(--on-dark-soft);
+    letter-spacing: 0.02em;
+  }
+</style>

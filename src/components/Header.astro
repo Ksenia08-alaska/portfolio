@@ -1,0 +1,205 @@
+---
+import { site } from '../content/site';
+import Button from './Button.astro';
+---
+<header class="header" data-header>
+  <div class="header__bar">
+    <a class="header__logo" href="/" aria-label={`${site.person.fullName}, на главную`}>
+      <span class="header__mark" aria-hidden="true">{site.person.initials}</span>
+      <span class="header__name">{site.person.fullName}</span>
+    </a>
+
+    <nav class="header__nav" aria-label="Основное меню">
+      {site.nav.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="header__cta">
+      <Button href={site.cta.url} label={site.cta.label} external />
+    </div>
+
+    <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+      <span class="sr-only">Открыть меню</span>
+      <span class="header__burger-lines" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+
+  <div class="menu on-dark" id="mobile-menu" data-menu hidden>
+    <nav class="menu__nav" aria-label="Мобильное меню">
+      {site.nav.map((l) => <a href={l.href} data-menu-link>{l.label}</a>)}
+    </nav>
+    <div class="menu__bottom">
+      <Button href={site.cta.url} label={site.cta.label} external />
+      <a class="menu__mail" href={site.contacts.email.url}>{site.contacts.email.label}</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 90;
+    padding: 12px var(--pad-x) 0;
+    pointer-events: none;
+  }
+  .header__bar {
+    pointer-events: auto;
+    max-width: calc(var(--max) - 2 * var(--pad-x) + 24px);
+    margin-inline: auto;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 8px 0 10px;
+    border-radius: 999px;
+    transition: background-color 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  .header.is-scrolled .header__bar {
+    background: rgb(243 235 223 / 0.86);
+    box-shadow: 0 0 0 1px rgb(31 18 11 / 0.08), 0 10px 30px -18px rgb(31 18 11 / 0.35);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  }
+  .header.is-hidden .header__bar {
+    transform: translateY(-120%);
+  }
+  .header__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    min-width: 0;
+  }
+  .header__mark {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--espresso);
+    color: var(--orange);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: -0.02em;
+  }
+  .header__name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .header__nav {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+  .header__nav a {
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+  .header__nav a:hover {
+    background: rgb(31 18 11 / 0.07);
+  }
+  .header__cta :global(.btn) {
+    min-height: 46px;
+    padding: 5px 5px 5px 20px;
+    font-size: 0.95rem;
+  }
+  .header__cta :global(.btn__dot) {
+    width: 36px;
+    height: 36px;
+  }
+  .header__burger {
+    display: none;
+    margin-left: auto;
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--espresso);
+    cursor: pointer;
+    place-items: center;
+  }
+  .header__burger-lines {
+    position: relative;
+    width: 20px;
+    height: 10px;
+  }
+  .header__burger-lines i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--milk);
+    transition: transform 0.45s var(--ease-out), top 0.45s var(--ease-out);
+  }
+  .header__burger-lines i:first-child { top: 0; }
+  .header__burger-lines i:last-child { top: 8px; }
+  .header__burger[aria-expanded='true'] .header__burger-lines i:first-child { top: 4px; transform: rotate(45deg); }
+  .header__burger[aria-expanded='true'] .header__burger-lines i:last-child { top: 4px; transform: rotate(-45deg); }
+
+  .menu {
+    pointer-events: auto;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 110px var(--pad-x) 32px;
+    overflow-y: auto;
+  }
+  .menu[hidden] { display: none; }
+  .menu__nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .menu__nav a {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(2.2rem, 11vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    padding: 6px 0;
+    border-bottom: 1px solid rgb(243 235 223 / 0.12);
+  }
+  .menu__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding-top: 32px;
+  }
+  .menu__mail {
+    color: var(--on-dark-soft);
+    overflow-wrap: anywhere;
+  }
+  :global(html.menu-open) .header.is-scrolled .header__bar,
+  :global(html.menu-open) .header__bar {
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  :global(html.menu-open) .header__name { color: var(--milk); }
+  :global(html.menu-open) .header__burger { background: var(--orange); }
+  :global(html.menu-open) .header__burger i { background: var(--espresso); }
+
+  @media (max-width: 1100px) {
+    .header__nav { display: none; }
+    .header__cta { margin-left: auto; }
+  }
+  @media (max-width: 760px) {
+    .header__cta { display: none; }
+    .header__burger { display: grid; }
+  }
+  @media (max-width: 400px) {
+    .header__name { font-size: 0.92rem; }
+  }
+</style>

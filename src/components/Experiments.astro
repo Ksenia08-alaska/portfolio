@@ -1,0 +1,33 @@
+---
+import { site } from '../content/site';
+const list = site.experiments;
+---
+{list.length > 0 && (
+  <section class="exp" aria-labelledby="exp-title">
+    <div class="container">
+      <h2 class="h3" id="exp-title">Наброски и эксперименты</h2>
+      <ul class="exp__list">
+        {list.map((e) => (
+          <li class="exp__item">
+            <h3 class="exp__title">{e.title}</h3>
+            <p class="muted">{e.text}</p>
+            <ul class="exp__tags">{e.tags.map((t) => <li class="tag">{t}</li>)}</ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .exp { padding-block: calc(var(--section-y) * 0.6); }
+  .exp__list {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 16px;
+  }
+  .exp__item { padding: 22px; border-radius: var(--radius-m); border: 1.5px solid rgb(31 18 11 / 0.15); }
+  .exp__title { font-weight: 700; font-size: 1.15rem; margin-bottom: 6px; }
+  .exp__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+</style>

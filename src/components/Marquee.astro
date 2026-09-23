@@ -1,0 +1,60 @@
+---
+import { site } from '../content/site';
+interface Props { items?: string[]; tone?: 'orange' | 'dark' }
+const { items = site.marquee, tone = 'orange' } = Astro.props;
+---
+<div class:list={['marquee', tone === 'orange' ? 'on-orange' : 'on-dark']} data-marquee>
+  <p class="sr-only">Стек: {items.join(', ')}</p>
+  <div class="marquee__track" aria-hidden="true" data-marquee-track>
+    {[0, 1].map(() => (
+      <div class="marquee__group">
+        {items.map((it) => (
+          <span class="marquee__item">
+            {it}
+            <svg class="marquee__star" viewBox="0 0 24 24"><path d="M12 0c.6 6.2 5.8 11.4 12 12-6.2.6-11.4 5.8-12 12-.6-6.2-5.8-11.4-12-12C6.2 11.4 11.4 6.2 12 0Z" fill="currentColor"/></svg>
+          </span>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    padding-block: clamp(16px, 2.2vw, 28px);
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 40s linear infinite;
+  }
+  :global(html.js) .marquee__track { animation: none; }
+  :global(html.reduce) .marquee__track { animation: none; }
+  .marquee__group {
+    display: flex;
+    flex: none;
+  }
+  .marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(18px, 2.4vw, 36px);
+    padding-right: clamp(18px, 2.4vw, 36px);
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(1.6rem, 4vw, 3.6rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+  .marquee__star {
+    width: 0.55em;
+    height: 0.55em;
+    flex: none;
+  }
+  .on-orange .marquee__star { color: var(--espresso); }
+  .on-dark .marquee__star { color: var(--orange); }
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+</style>

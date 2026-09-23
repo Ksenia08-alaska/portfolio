@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Marquee from '../components/Marquee.astro';
+import Works from '../components/Works.astro';
+import Skills from '../components/Skills.astro';
+import Experiments from '../components/Experiments.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+---
+<Base intro>
+  <Hero />
+  <div class="marquee-wrap on-orange"><Marquee /></div>
+  <Works />
+  <Skills />
+  <Experiments />
+  <About />
+  <Contact />
+</Base>
+
+<style>
+  .marquee-wrap {
+    padding-bottom: var(--radius-l);
+  }
+</style>

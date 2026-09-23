@@ -1,0 +1,58 @@
+<div class="cursor" aria-hidden="true" data-cursor>
+  <div class="cursor__dot" data-cursor-dot></div>
+  <div class="cursor__ring" data-cursor-ring><span data-cursor-label></span></div>
+</div>
+
+<style>
+  .cursor { display: none; }
+  :global(html.has-cursor) .cursor { display: block; }
+  .cursor__dot,
+  .cursor__ring {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 150;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+  .cursor__dot {
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    background: var(--orange);
+  }
+  .cursor__ring {
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    border: 1.5px solid rgb(255 91 20 / 0.7);
+    display: grid;
+    place-items: center;
+    transition: width 0.45s var(--ease-out), height 0.45s var(--ease-out), margin 0.45s var(--ease-out),
+      background-color 0.45s var(--ease-out), border-color 0.45s;
+  }
+  .cursor__ring span {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--espresso);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.3s, transform 0.4s var(--ease-out);
+  }
+  :global(html.cursor-label) .cursor__ring {
+    width: 96px;
+    height: 96px;
+    margin: -48px 0 0 -48px;
+    background: var(--orange);
+    border-color: var(--orange);
+  }
+  :global(html.cursor-label) .cursor__ring span { opacity: 1; transform: none; }
+  :global(html.cursor-label) .cursor__dot { opacity: 0; }
+  :global(html.cursor-hover) .cursor__ring {
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    border-color: var(--orange);
+  }
+  :global(html.cursor-hidden) .cursor { opacity: 0; }
+</style>
